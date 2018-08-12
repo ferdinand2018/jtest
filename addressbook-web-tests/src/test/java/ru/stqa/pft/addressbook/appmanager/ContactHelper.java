@@ -9,10 +9,13 @@ import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 import ru.stqa.pft.addressbook.appmanager.HelperBase;
 import ru.stqa.pft.addressbook.model.ContactData;
+import ru.stqa.pft.addressbook.model.Contacts;
 import ru.stqa.pft.addressbook.model.GroupData;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ContactHelper extends HelperBase {
 
@@ -56,7 +59,9 @@ public class ContactHelper extends HelperBase {
 
     public void selectContact(int index){
         wd.findElements(By.name("selected[]")).get(index).click();
-        //click(By.name("selected[]"));
+    }
+    public void selectContactById(int id){
+        wd.findElement(By.cssSelector("input[value = '" + id + "']")).click();
     }
 
     public void initContactModification() {
@@ -74,8 +79,8 @@ public class ContactHelper extends HelperBase {
         returnToHomePage();
     }
 
-    public void modify(int index, ContactData contact) {
-        selectContact(index);
+    public void modify(ContactData contact) {
+        selectContactById(contact.getId());
         initContactModification();
         fillContactForm(contact, false);
         submitContactModification();
@@ -84,6 +89,13 @@ public class ContactHelper extends HelperBase {
 
     public void delete(int index) {
         selectContact(index);
+        deleteSelectedContacts();
+        deletedAlert();
+        returnToHomePage();
+    }
+
+    public void delete(ContactData contact) {
+        selectContactById(contact.getId());
         deleteSelectedContacts();
         deletedAlert();
         returnToHomePage();
@@ -108,4 +120,18 @@ public class ContactHelper extends HelperBase {
         }
         return contacts;
     }
+
+    public Contacts all() {
+        Contacts contacts = new Contacts();
+        List<WebElement> elements = wd.findElements(By.name("entry"));
+        for(WebElement element : elements){
+            int id = Integer.parseInt(element.findElement(By.tagName("input")).getAttribute("id"));
+            String firstname = element.findElement(By.xpath("//table[@id='maintable']/tbody/tr[17]/td[3]")).getText();
+            String lastname = element.findElement(By.xpath("//table[@id='maintable']/tbody/tr[17]/td[2]")).getText();
+            contacts.add(new ContactData().withId(id).withFirstname(firstname).withLastname(lastname));
+        }
+        return contacts;
+    }
+
+
 }
