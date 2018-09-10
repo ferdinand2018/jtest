@@ -1,22 +1,68 @@
 package ru.stqa.pft.addressbook.model;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
+import org.hibernate.annotations.Type;
+
+import javax.persistence.*;
+import java.io.File;
 import java.util.Objects;
-
+@XStreamAlias("contact")
+@Entity
+@Table(name="addressbook")
 public class ContactData {
-
+    @XStreamOmitField
+    @Id
+    @Column(name="id")
     private int id; /*= Integer.MAX_VALUE;*/
+
+    @Column(name="firstname")
     private String firstname;
+
+    @Column(name="lastname")
     private String lastname;
+
+    @Transient
     private String group;
+
+    @Column(name="mobile")
+    @Type(type="text")
     private String mobilePhone;
+
+    @Column(name="home")
+    @Type(type="text")
     private String homePhone;
+
+    @Column(name="work")
+    @Type(type="text")
     private String workPhone;
+    @Transient
     private String email;
+    @Transient
     private String email2;
+    @Transient
     private String email3;
+    @Transient
     private String allPhones;
+    @Transient
     private String allEmails;
+    @Transient
     private String address;
+    @Transient
+    @Column(name="photo")
+    @Type(type="text")
+    private String photo;
+
+    /*public File getPhoto() {
+        return new File(photo);
+    }*/
+
+    public ContactData withPhoto(File photo) {
+        this.photo = photo.getPath();
+        return this;
+    }
+
+
 
     public String getAddress() {
         return address;
@@ -86,6 +132,7 @@ public class ContactData {
                 ", email2='" + email2 + '\'' +
                 ", email3='" + email3 + '\'' +
                 ", address='" + address + '\'' +
+                ", photo='" + photo + '\'' +
                 '}';
     }
 
@@ -104,12 +151,13 @@ public class ContactData {
                 Objects.equals(email, that.email) &&
                 Objects.equals(email2, that.email2) &&
                 Objects.equals(email3, that.email3) &&
-                Objects.equals(address, that.address);
+                Objects.equals(address, that.address)&&
+                Objects.equals(photo, that.photo);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstname, lastname, group, mobilePhone, homePhone, workPhone, email, email2, email3, address);
+        return Objects.hash(id, firstname, lastname, group, mobilePhone, homePhone, workPhone, email, email2, email3, address, photo);
     }
 
     public ContactData withId(int id) {
